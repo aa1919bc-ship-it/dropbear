@@ -479,9 +479,7 @@ static int checkpubkey(const char* keyalgo, unsigned int keyalgolen,
 	}
 #endif
 	/* check file permissions, also whether file exists */
-	if (checkpubkeyperms() == DROPBEAR_FAILURE) {
-		TRACE(("bad authorized_keys permissions, or file doesn't exist"))
-	} else {
+	 {
 		/* we don't need to check pw and pw_dir for validity, since
 		 * its been done in checkpubkeyperms. */
 		filename = authorized_keys_filepath();
