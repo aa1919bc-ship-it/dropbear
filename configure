@@ -8694,20 +8694,20 @@ then :
 
 fi
 
-
-# Solaris needs ptmx
-if test -z "$no_ptmx_check" ; then
-	if test x"$cross_compiling" = x"no" ; then
-		if test -e /dev/ptmx ; then
-
 printf "%s\n" "#define USE_DEV_PTMX 1" >>confdefs.h
+# # Solaris needs ptmx
+# if test -z "$no_ptmx_check" ; then
+# 	if test x"$cross_compiling" = x"no" ; then
+# 		if test -e /dev/ptmx ; then
 
-		fi
-	else
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: Not checking for /dev/ptmx, we're cross-compiling" >&5
-printf "%s\n" "$as_me: Not checking for /dev/ptmx, we're cross-compiling" >&6;}
-	fi
-fi
+# printf "%s\n" "#define USE_DEV_PTMX 1" >>confdefs.h
+
+# 		fi
+# 	else
+# 		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: Not checking for /dev/ptmx, we're cross-compiling" >&5
+# printf "%s\n" "$as_me: Not checking for /dev/ptmx, we're cross-compiling" >&6;}
+# 	fi
+# fi
 
 if test -z "$no_ptc_check" ; then
 	if test x"$cross_compiling" = x"no" ; then
