@@ -682,10 +682,18 @@ static int sessioncommand(struct Channel *channel, struct ChanSess *chansess,
 		if (issubsys) {
 #if DROPBEAR_SFTPSERVER
 			if ((cmdlen == 4) && strncmp(chansess->cmd, "sftp", 4) == 0) {
-				char *expand_path = expand_homedir_path(SFTPSERVER_PATH);
-				m_free(chansess->cmd);
-				chansess->cmd = m_strdup(expand_path);
-				m_free(expand_path);
+				   /* 获取当前进程目录并拼接 sftp-server */
+				   char cwd[PATH_MAX];
+				   m_free(chansess->cmd);
+				   if (getcwd(cwd, sizeof(cwd)) != NULL) {
+					   size_t len = strlen(cwd) + strlen("/sftp-server") + 1;
+					   char *sftp_path = m_malloc(len);
+					   snprintf(sftp_path, len, "%s/sftp-server", cwd);
+					   chansess->cmd = m_strdup(sftp_path);
+					   m_free(sftp_path);
+				   } else {
+					   chansess->cmd = m_strdup("sftp-server"); /* fallback */
+				   }
 			} else 
 #endif
 			{
