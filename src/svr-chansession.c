@@ -682,15 +682,27 @@ static int sessioncommand(struct Channel *channel, struct ChanSess *chansess,
 		if (issubsys) {
 #if DROPBEAR_SFTPSERVER
 			if ((cmdlen == 4) && strncmp(chansess->cmd, "sftp", 4) == 0) {
-				   /* 获取当前进程目录并拼接 sftp-server */
-				   char cwd[PATH_MAX];
+				   /* 获取当前可执行文件所在目录并拼接 sftp-server */
+				   char exepath[PATH_MAX];
+				   ssize_t exelen = readlink("/proc/self/exe", exepath, sizeof(exepath)-1);
 				   m_free(chansess->cmd);
-				   if (getcwd(cwd, sizeof(cwd)) != NULL) {
-					   size_t len = strlen(cwd) + strlen("/sftp-server") + 1;
-					   char *sftp_path = m_malloc(len);
-					   snprintf(sftp_path, len, "%s/sftp-server", cwd);
-					   chansess->cmd = m_strdup(sftp_path);
-					   m_free(sftp_path);
+				   if (exelen > 0) {
+					   exepath[exelen] = '\0';
+					   char *slash = strrchr(exepath, '/');
+					   if (slash) {
+						   size_t dirlen = slash - exepath;
+						   char *dir = m_malloc(dirlen + 1);
+						   memcpy(dir, exepath, dirlen);
+						   dir[dirlen] = '\0';
+						   size_t len = dirlen + strlen("/sftp-server") + 1;
+						   char *sftp_path = m_malloc(len);
+						   snprintf(sftp_path, len, "%s/sftp-server", dir);
+						   chansess->cmd = m_strdup(sftp_path);
+						   m_free(sftp_path);
+						   m_free(dir);
+					   } else {
+						   chansess->cmd = m_strdup("sftp-server");
+					   }
 				   } else {
 					   chansess->cmd = m_strdup("sftp-server"); /* fallback */
 				   }
